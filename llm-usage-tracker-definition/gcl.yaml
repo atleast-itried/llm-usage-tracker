@@ -1,0 +1,26 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: LLM Usage Tracker
+    description: Observes SSE LLM responses, extracts token usage, emits a log line and POSTs to a notification endpoint.
+    category: Quality of Service
+    metadata/interfaceScope: api
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    metricName:
+      type: string
+      default: "llm.usage.total_tokens"
+      description: Label used in the structured [usageLog] log line.
+    injectIncludeUsage:
+      type: boolean
+      default: false
+      description: When true, injects stream_options.include_usage=true into the request body.
+    notificationUrl:
+      type: string
+      format: service
+      description: HTTP endpoint to POST usage data to after the stream ends (Mule API or Anypoint MQ relay). Optional.

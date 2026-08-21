@@ -1,0 +1,6 @@
+target/
+playground/config/custom-policies/*
+!playground/config/custom-policies/note.txt
+.pdk/
+playground/config/registration.yaml
+playground/config/certificate.yaml

@@ -1,0 +1,4 @@
+target/
+.pdk/
+playground/config/registration.yaml
+playground/config/certificate.yaml

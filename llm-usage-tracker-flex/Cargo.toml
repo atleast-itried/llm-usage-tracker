@@ -1,0 +1,27 @@
+[package]
+name = "llm_usage_tracker"
+version = "1.0.0"
+edition = "2018"
+
+[package.metadata.anypoint]
+group_id = "<your-org-group-id>"
+definition_asset_id = { name = "llm-usage-tracker", version = "1.0.0-DEV" }
+implementation_asset_id = "llm-usage-tracker-flex"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = "1.0"
+futures = "0.3"
+pdk = { version = "1.9.2" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+pdk-unit = { version = "1.9.2", features = ["experimental"] }
+
+[profile.release]
+lto = true
+opt-level = 'z'
+strip = "debuginfo"
