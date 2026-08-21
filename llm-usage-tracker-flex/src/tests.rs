@@ -1,5 +1,4 @@
 mod tests {
-    use super::*;
     use pdk_unit::{UnitHttpMessage, UnitHttpRequest, UnitHttpResponse, UnitTestBuilder};
 
     fn cfg(inject: bool) -> String {
@@ -24,7 +23,7 @@ mod tests {
     // ── SSE parsing unit tests ────────────────────────────────────────────────
 
     mod sse_helpers {
-        use super::super::*;
+        use crate::{take_one_sse_event, UsageChunk};
 
         #[test]
         fn test_lf_boundary() {
@@ -137,7 +136,7 @@ mod tests {
         use pdk_unit::TraceBackend;
         use std::rc::Rc;
 
-        fn trace() -> Rc<TraceBackend> {
+        fn trace() -> Rc<TraceBackend<UnitHttpResponse>> {
             Rc::new(TraceBackend::new(UnitHttpResponse::new(200)))
         }
 

@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2018"
 
 [package.metadata.anypoint]
-group_id = "<your-org-group-id>"
+group_id = "13d6f501-a82f-48e2-ae80-49a60e645794"
 definition_asset_id = { name = "llm-usage-tracker", version = "1.0.0-DEV" }
 implementation_asset_id = "llm-usage-tracker-flex"
 

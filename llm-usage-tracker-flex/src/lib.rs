@@ -3,7 +3,6 @@ mod generated;
 #[cfg(test)]
 mod tests;
 
-use futures::StreamExt;
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -20,12 +19,12 @@ const SSE_CONTENT_TYPE: &'static str = "text/event-stream";
 // ── Serde types ──────────────────────────────────────────────────────────────
 
 #[derive(Deserialize)]
-struct UsageChunk {
-    usage: Option<UsageData>,
+pub(crate) struct UsageChunk {
+    pub(crate) usage: Option<UsageData>,
 }
 
 #[derive(Deserialize, Clone)]
-struct UsageData {
+pub(crate) struct UsageData {
     prompt_tokens: Option<u64>,
     completion_tokens: Option<u64>,
     total_tokens: Option<u64>,
@@ -83,7 +82,7 @@ async fn response_filter(
     _request_data: RequestData<()>,
     config: &Config,
     client: &HttpClient,
-) -> Flow<()> {
+) {
     let headers_state = response_state.into_headers_state().await;
 
     let is_sse = headers_state
@@ -96,7 +95,7 @@ async fn response_filter(
     let body_stream_state = headers_state.into_body_stream_state().await;
 
     if !is_sse {
-        return Flow::Continue(());
+        return;
     }
 
     let mut stream = body_stream_state.stream();
@@ -123,8 +122,6 @@ async fn response_filter(
         emit_usage_log(&usage, config);
         notify_usage(client, config, &usage).await;
     }
-
-    Flow::Continue(())
 }
 
 fn emit_usage_log(usage: &UsageData, config: &Config) {
@@ -203,25 +200,6 @@ fn find_event_boundary(buf: &[u8]) -> Option<(usize, usize)> {
 }
 
 // ── Entrypoints ──────────────────────────────────────────────────────────────
-
-#[pdk::hl::entrypoint_flex]
-fn init(abi: &dyn pdk::flex_abi::api::FlexAbi) -> anyhow::Result<()> {
-    let config: Config = serde_json::from_slice(abi.get_configuration()).map_err(|e| {
-        anyhow::anyhow!(
-            "Failed to parse configuration '{}'. Cause: {e}",
-            String::from_utf8_lossy(abi.get_configuration()),
-        )
-    })?;
-
-    if let Some(url) = &config.notification_url {
-        if !url.uri().authority().is_empty() {
-            abi.service_create(url.clone())?;
-        }
-    }
-
-    abi.setup()?;
-    Ok(())
-}
 
 #[entrypoint]
 async fn configure(
